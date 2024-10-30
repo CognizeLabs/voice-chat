@@ -54,5 +54,26 @@ def voice():
     except Exception as e:
         return jsonify({'error': f'Error processing audio: {str(e)}', 'transcript': ''}), 500
 
+
+# app.py (Add the following code)
+
+@app.route('/api/text', methods=['POST'])
+def text_message():
+    data = request.get_json()
+    text = data.get('text', '')
+    if not text:
+        return jsonify({'error': 'No text provided'}), 400
+
+    # Perform NLP processing (e.g., sentiment analysis)
+    sentiment = sia.polarity_scores(text)
+    if sentiment['compound'] >= 0.05:
+        reply = 'That sounds positive!'
+    elif sentiment['compound'] <= -0.05:
+        reply = 'That sounds negative.'
+    else:
+        reply = 'That sounds neutral.'
+
+    return jsonify({'reply': reply})
+
 if __name__ == '__main__':
     app.run(debug=True)
